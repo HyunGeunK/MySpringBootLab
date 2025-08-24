@@ -1,14 +1,13 @@
 package com.rookies4.MySpringBootLab.service;
 
-import com.rookies4.MySpringBootLab.entity.Book;
+import com.rookies4.MySpringBootLab.dto.BookDTO;
 import java.util.List;
-import java.util.Optional;
 
 public interface BookService {
-    Book createBook(Book book);
-    List<Book> findAllBooks();
-    Optional<Book> findBookById(Long id);
-    Optional<Book> findBookByIsbn(String isbn);
-    Book updateBook(Long id, Book bookDetails);
+    BookDTO.BookResponse createBook(BookDTO.BookCreateRequest request);
+    List<BookDTO.BookResponse> findAllBooks();
+    BookDTO.BookResponse findBookById(Long id);
+    BookDTO.BookResponse findBookByIsbn(String isbn);
+    BookDTO.BookResponse updateBook(Long id, BookDTO.BookUpdateRequest request);
     void deleteBook(Long id);
 }

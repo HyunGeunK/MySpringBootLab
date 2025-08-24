@@ -28,6 +28,6 @@ public class Book {
     private String author;
     @NotBlank(message = "ISBN is mandatory")
     private String isbn;
-    private double price;
+    private Integer price;
     private LocalDate publishDate;
 }

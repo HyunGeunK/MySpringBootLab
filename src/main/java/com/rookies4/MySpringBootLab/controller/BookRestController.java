@@ -1,62 +1,54 @@
 package com.rookies4.MySpringBootLab.controller;
 
-import com.rookies4.MySpringBootLab.entity.Book;
-import com.rookies4.MySpringBootLab.exception.BusinessException;
+import com.rookies4.MySpringBootLab.dto.BookDTO;
 import com.rookies4.MySpringBootLab.service.BookService;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/books")
+@RequiredArgsConstructor
 public class BookRestController {
 
-    @Autowired
-    private BookService bookService;
+    private final BookService bookService;
 
     @PostMapping
-    public ResponseEntity<Book> createBook(@RequestBody Book book) {
-        Book createdBook = bookService.createBook(book);
-        return new ResponseEntity<>(createdBook, HttpStatus.CREATED);
+    public ResponseEntity<BookDTO.BookResponse> createBook(@Valid @RequestBody BookDTO.BookCreateRequest request) {
+        BookDTO.BookResponse response = bookService.createBook(request);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     @GetMapping
-    public List<Book> getAllBooks() {
+    public List<BookDTO.BookResponse> getAllBooks() {
         return bookService.findAllBooks();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Book> getBookById(@PathVariable Long id) {
-        return bookService.findBookById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<BookDTO.BookResponse> getBookById(@PathVariable Long id) {
+        BookDTO.BookResponse response = bookService.findBookById(id);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/isbn/{isbn}")
-    public Book getBookByIsbn(@PathVariable String isbn) {
-        return bookService.findBookByIsbn(isbn)
-                .orElseThrow(() -> new BusinessException("Book not found with isbn: " + isbn));
+    public ResponseEntity<BookDTO.BookResponse> getBookByIsbn(@PathVariable String isbn) {
+        BookDTO.BookResponse response = bookService.findBookByIsbn(isbn);
+        return ResponseEntity.ok(response);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Book> updateBook(@PathVariable Long id, @RequestBody Book bookDetails) {
-        try {
-            Book updatedBook = bookService.updateBook(id, bookDetails);
-            return ResponseEntity.ok(updatedBook);
-        } catch (BusinessException e) {
-            return ResponseEntity.notFound().build();
-        }
+    public ResponseEntity<BookDTO.BookResponse> updateBook(@PathVariable Long id, @RequestBody BookDTO.BookUpdateRequest request) {
+        BookDTO.BookResponse updatedBook = bookService.updateBook(id, request);
+        return ResponseEntity.ok(updatedBook);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteBook(@PathVariable Long id) {
-        try {
-            bookService.deleteBook(id);
-            return ResponseEntity.noContent().build();
-        } catch (BusinessException e) {
-            return ResponseEntity.notFound().build();
-        }
+        bookService.deleteBook(id);
+        return ResponseEntity.noContent().build();
     }
 }
